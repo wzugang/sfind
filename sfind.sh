@@ -3,10 +3,10 @@
 help()
 {
     echo """Usage:
-    ./sfind.sh dir suffix cmd str1 str2 str3 ...
+    ./sfind.sh dir cmd name str1 str2 str3 ...
 Options:
-    -o search if one of str is exists.
-    -a search the file that have all strs."""
+    -o search and display if one of strs is exists.
+    -a search and display if all strs in the file."""
     exit 1
 }
 
@@ -62,31 +62,33 @@ done
 
 
 OBJS=`find $DIR -name "*${NAME}"|xargs echo`
-OLD_IFS="$IFS" 
-IFS=" "
-ARRS=($OBJS)
-IFS=OLD_IFS
 
 find_and()
 {
-for file in ${ARRS[@]} ;do
+for file in ${OBJS} ;do
+    ! [ -f $file ] && return 1
     if_have_all $file
 done
 }
 
 find_or()
 {
-for file in ${ARRS[@]} ;do
+for file in ${OBJS} ;do
+    ! [ -f $file ] && return 1
     if_have $file
 done
 }
 
-
+search()
+{
+OLD_IFS="$IFS" 
+IFS=" "
 [ "$CMD" = "-a" ] && find_and
 [ "$CMD" = "-o" ] && find_or
+IFS=OLD_IFS
+}
 
-
-
+search
 
 
 
